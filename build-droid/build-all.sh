@@ -56,6 +56,9 @@ export BOOST_VERSION="1.49.0"
 export TINYXML_VERSION="2.6.2"
 export TINYXML_FILE="2_6_2"
 
+# Project version to use to build protobuf
+export PROTOBUF_VERSION="2.4.1"
+
 # Project version to use to build expat (changing this may break the build)
 export EXPAT_VERSION="2.0.1"
 
@@ -181,6 +184,9 @@ do
 
 	# Build tinyxml
 	${TOPDIR}/build-droid/build-tinyxml.sh > "${LOGPATH}-tinyxml.log"
+
+	# Build protobuf
+	${TOPDIR}/build-droid/build-protobuf.sh > "${LOGPATH}-protobuf.log"
 
 	# Build expat
 	${TOPDIR}/build-droid/build-expat.sh > "${LOGPATH}-expat.log"
