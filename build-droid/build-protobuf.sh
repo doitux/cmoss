@@ -65,7 +65,7 @@ export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 set +e
 make
 set -e
-cp src/.libs/libprotobuf.a ${ROOTDIR}/lib/
+cp src/.libs/*.a ${ROOTDIR}/lib/
 cp -r src/google ${ROOTDIR}/include/
 
 # Clean up
