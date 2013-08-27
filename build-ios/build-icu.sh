@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Copyright (c) 2010, Pierre-Olivier Latour
@@ -27,32 +27,41 @@ set -e
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Download source
-if [ ! -e "curl-${CURL_VERSION}.tar.gz" ]
+if [ ! -e "icu4c-${ICU_VERSION//./_}-src.tgz" ]
 then
-  curl $PROXY -O "http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz"
+	curl $PROXY -O "http://download.icu-project.org/files/icu4c/${ICU_VERSION}/icu4c-${ICU_VERSION//./_}-src.tgz"
 fi
 
 # Extract source
-rm -rf "curl-${CURL_VERSION}"
-tar zxvf "curl-${CURL_VERSION}.tar.gz"
-pushd "curl-${CURL_VERSION}"
+rm -rf "icu"
+tar xvf "icu4c-${ICU_VERSION//./_}-src.tgz"
 
 # Build
+
+HOSTBUILD=${TMPDIR}/icu-hostbuild
+
+if [ ! -d ${HOSTBUILD} ]
+then
+	mkdir -p ${HOSTBUILD}
+	pushd ${HOSTBUILD}
+	${TMPDIR}/icu/source/configure --prefix="${HOSTBUILD}"
+	make
+	popd
+fi
+
+ICU_FLAGS="-I${TMPDIR}/icu/source/common/ -I${TMPDIR}/icu/source/tools/tzcode/"
+
 export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include"
+export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 ${ICU_FLAGS} -I${ROOTDIR}/include"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-zlib=${BUILD_SDKROOT}/usr --with-ssl=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --disable-shared --enable-static --disable-ipv6 --disable-manual --disable-verbose  # Work around curl tool not linking against static libssh2 by only building library and headers
-pushd "lib"
-make
+pushd "icu/source"
+./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-cross-build="${HOSTBUILD}" --enable-static --disable-shared --enable-extras=no --enable-strict=no --enable-tests=no --enable-samples=no --enable-dyload=no --enable-tools=no --with-data-packaging=archive
+
+make VERBOSE=1
 make install
-popd
-pushd "include"
-make
-make install
-popd
 popd
 
 # Clean up
-rm -rf "curl-${CURL_VERSION}"
+rm -rf "icu"

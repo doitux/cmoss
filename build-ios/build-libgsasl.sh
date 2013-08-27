@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+# Changes for libgsasl Copyright (c) 2012, Lothar May
 # Copyright (c) 2010, Pierre-Olivier Latour
 # All rights reserved.
 #
@@ -27,43 +28,27 @@ set -e
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Download source
-if [ ! -e "zlib-${ZLIB_VERSION}.tar.gz" ]
+if [ ! -e "libgsasl-${LIBGSASL_VERSION}.tar.gz" ]
 then
-  curl $PROXY -O "http://zlib.net/zlib-${ZLIB_VERSION}.tar.gz"
+  curl $PROXY -O "ftp://ftp.gnu.org/gnu/gsasl/libgsasl-${LIBGSASL_VERSION}.tar.gz"
 fi
 
 # Extract source
-rm -rf "zlib-${ZLIB_VERSION}"
-tar xvf "zlib-${ZLIB_VERSION}.tar.gz"
-cp ${TOPDIR}/build-droid/Makefile.zlib zlib-${ZLIB_VERSION}/Makefile.in
+rm -rf "libgsasl-${LIBGSASL_VERSION}"
+tar xvf "libgsasl-${LIBGSASL_VERSION}.tar.gz"
 
 # Build
-pushd "zlib-${ZLIB_VERSION}"
-export CC=${DROIDTOOLS}-gcc
-export LD=${DROIDTOOLS}-ld
-export CPP=${DROIDTOOLS}-cpp
-export CXX=${DROIDTOOLS}-g++
-export AR=${DROIDTOOLS}-ar
-export AS=${DROIDTOOLS}-as
-export NM=${DROIDTOOLS}-nm
-export STRIP=${DROIDTOOLS}-strip
-export CXXCPP=${DROIDTOOLS}-cpp
-export RANLIB=${DROIDTOOLS}-ranlib
-export LDFLAGS="-Os -fpic -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${ROOTDIR}/lib"
-export CFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
-export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
+export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
+export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include"
+export CPPFLAGS="${CFLAGS}"
+export CXXFLAGS="${CFLAGS}"
 
-# Force linux
-mv "configure" "configure~"
-sed 's/\"\$uname\"/\"linux\"/' configure~ > configure~1
-sed 's/libz\.so\.1/libz\.so/' configure~1 > configure
-chmod u+x configure
-
-./configure --prefix=${ROOTDIR}
+pushd "libgsasl-${LIBGSASL_VERSION}"
+./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --enable-static --disable-shared
 
 make
 make install
 popd
 
 # Clean up
-rm -rf "zlib-${ZLIB_VERSION}"
+rm -rf "libgsasl-${LIBGSASL_VERSION}"

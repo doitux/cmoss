@@ -55,9 +55,9 @@ tar xvf "${TOPDIR}/build-droid/droid-boost-patch.tar.gz"
 # ---------
 
 # Make the initial bootstrap
-echo "Performing boost boostrap"
-
-./bootstrap.sh
+BOOST_LIBS_COMMA=$(echo $BOOST_LIBS | sed -e "s/ /,/g")
+echo "Bootstrapping (with libs $BOOST_LIBS_COMMA)"
+./bootstrap.sh --with-libraries=$BOOST_LIBS_COMMA
 if [ $? != 0 ] ; then
 	echo "ERROR: Could not perform boostrap! See $TMPLOG for more info."
 	exit 1
@@ -100,6 +100,8 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-g
 <compileflags>-std=gnu++0x
 <compileflags>-Wno-variadic-macros
+<compileflags>-Wno-unused-but-set-variable
+<compileflags>-Wno-vla
 <compileflags>-fexceptions
 <compileflags>-fpic
 <compileflags>-ffunction-sections
@@ -111,14 +113,15 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-D__ANDROID__
 <compileflags>-DNDEBUG
 <compileflags>-I${SDK}/platforms/android-14/arch-x86/usr/include
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/libs/x86/include
+<compileflags>-I${TMPDIR}/${BOOST_SOURCE_NAME}
 <compileflags>-I${ROOTDIR}/include
 <linkflags>-nostdlib
 <linkflags>-lc
 <linkflags>-Wl,-rpath-link=${SYSROOT}/usr/lib
 <linkflags>-L${SYSROOT}/usr/lib
-<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86
+<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/libs/x86
 <linkflags>-L${ROOTDIR}/lib
 # Flags above are for android
 <architecture>x86
@@ -135,7 +138,9 @@ using android : arm : ${DROIDTOOLS}-g++ :
 <compileflags>-O2
 <compileflags>-g
 <compileflags>-std=gnu++0x
-<compileflags>-Wno-variadic-macros
+<compileflags>-Wno-variadic-macros	
+<compileflags>-Wno-unused-but-set-variable
+<compileflags>-Wno-vla
 <compileflags>-fexceptions
 <compileflags>-fpic
 <compileflags>-ffunction-sections
@@ -155,14 +160,15 @@ using android : arm : ${DROIDTOOLS}-g++ :
 <compileflags>-D__ANDROID__
 <compileflags>-DNDEBUG
 <compileflags>-I${SDK}/platforms/android-14/arch-arm/usr/include
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/libs/armeabi-v7a/include
+<compileflags>-I${TMPDIR}/${BOOST_SOURCE_NAME}
 <compileflags>-I${ROOTDIR}/include
 <linkflags>-nostdlib
 <linkflags>-lc
 <linkflags>-Wl,-rpath-link=${SYSROOT}/usr/lib
 <linkflags>-L${SYSROOT}/usr/lib
-<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a
+<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/libs/armeabi-v7a
 <linkflags>-L${ROOTDIR}/lib
 # Flags above are for android
 <architecture>arm
@@ -177,8 +183,6 @@ using android : arm : ${DROIDTOOLS}-g++ :
 EOF
 
 cat >> project-config.jam <<EOF
-libraries = --with-date_time --with-filesystem --with-program_options --with-regex --with-signals --with-system --with-thread --with-iostreams ;
-
 option.set prefix : ${ROOTDIR}/ ;
 option.set exec-prefix : ${ROOTDIR}/bin ;
 option.set libdir : ${ROOTDIR}/lib ;
@@ -187,9 +191,9 @@ EOF
 
 if [ "${PLATFORM}" == "arm-linux-androideabi" ]
 then
-	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-arm --disable-filesystem3 define=BOOST_FILESYSTEM_VERSION=2 -d+2 install
+	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-arm install
 else
-	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-i686 --disable-filesystem3 define=BOOST_FILESYSTEM_VERSION=2 -d+2 install
+	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-i686 install
 fi
 
 # Combine boost libraries into one static archive

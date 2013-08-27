@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
+# Changes for tinyxml Copyright (c) 2012, Lothar May
 # Copyright (c) 2010, Pierre-Olivier Latour
 # All rights reserved.
 #
@@ -27,32 +28,28 @@ set -e
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Download source
-if [ ! -e "curl-${CURL_VERSION}.tar.gz" ]
+if [ ! -e "tinyxml_${TINYXML_FILE}.tar.gz" ]
 then
-  curl $PROXY -O "http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz"
+  curl $PROXY -L -O "http://downloads.sourceforge.net/project/tinyxml/tinyxml/${TINYXML_VERSION}/tinyxml_${TINYXML_FILE}.tar.gz"
 fi
 
 # Extract source
-rm -rf "curl-${CURL_VERSION}"
-tar zxvf "curl-${CURL_VERSION}.tar.gz"
-pushd "curl-${CURL_VERSION}"
+rm -rf "tinyxml"
+tar xvf "tinyxml_${TINYXML_FILE}.tar.gz"
+cp ${TOPDIR}/build-ios/Makefile.tinyxml tinyxml/Makefile
 
 # Build
-export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include"
+pushd "tinyxml"
+BIGFILES=-D_FILE_OFFSET_BITS=64
+export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -Wno-unknown-pragmas -Wno-format -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
+export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -g ${BIGFILES}"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-zlib=${BUILD_SDKROOT}/usr --with-ssl=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --disable-shared --enable-static --disable-ipv6 --disable-manual --disable-verbose  # Work around curl tool not linking against static libssh2 by only building library and headers
-pushd "lib"
-make
-make install
-popd
-pushd "include"
-make
-make install
-popd
+make CC="${CC}" AR="${AR}" RANLIB="${RANLIB}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+cp libtinyxml.a ${ROOTDIR}/lib
+cp tinyxml.h ${ROOTDIR}/include
 popd
 
 # Clean up
-rm -rf "curl-${CURL_VERSION}"
+rm -rf "tinyxml"
