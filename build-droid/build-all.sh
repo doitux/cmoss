@@ -64,7 +64,7 @@ export PROTOBUF_VERSION="2.4.1"
 export EXPAT_VERSION="2.0.1"
 
 # Project version to use to build yajl (changing this may break the build)
-export YAJL_VERSION="2.0.1"
+export YAJL_VERSION="2.0.3"
 
 # Project version to use to build sqlcipher (changing this may break the build)
 export SQLCIPHER_VERSION="2.1.1"
