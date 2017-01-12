@@ -29,7 +29,7 @@ set -e
 # Download source
 if [ ! -e "openssl-${OPENSSL_VERSION}.tar.gz" ]
 then
-  curl $PROXY -O "http://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
+  curl $PROXY -O "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
 fi
 
 # Extract source
@@ -62,7 +62,9 @@ sed "s/\.so\.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)/\.so/" Makefile~ > Makefile~1
 sed "s/\$(SHLIB_MAJOR).\$(SHLIB_MINOR)//" Makefile~1 > Makefile
 
 make CC="${CC}" CFLAG="${CFLAGS}" SHARED_LDFLAGS="${LDFLAGS}"
-make install
+#make install
+#### install fails building man pages. install_sw doesn't build man pages. 
+make install_sw
 popd
 
 # Clean up
