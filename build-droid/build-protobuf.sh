@@ -30,7 +30,8 @@ set -e
 # Download source
 if [ ! -e "protobuf-${PROTOBUF_VERSION}.tar.bz2" ]
 then
-  curl $PROXY -O "http://protobuf.googlecode.com/files/protobuf-${PROTOBUF_VERSION}.tar.bz2"
+#  curl $PROXY -O "http://protobuf.googlecode.com/files/protobuf-${PROTOBUF_VERSION}.tar.bz2"
+  curl $PROXY -L -O "https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/protobuf-${PROTOBUF_VERSION}.tar.bz2"
 fi
 
 # Extract source

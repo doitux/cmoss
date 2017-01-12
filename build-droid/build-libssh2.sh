@@ -29,7 +29,7 @@ set -e
 # Download source
 if [ ! -e "libssh2-${LIBSSH2_VERSION}.tar.gz" ]
 then
-  curl $PROXY -O "http://www.libssh2.org/download/libssh2-${LIBSSH2_VERSION}.tar.gz"
+  curl $PROXY -O "https://www.libssh2.org/download/libssh2-${LIBSSH2_VERSION}.tar.gz"
 fi
 
 # Extract source

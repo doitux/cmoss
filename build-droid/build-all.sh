@@ -19,7 +19,8 @@ else
 fi
 
 # Project version to use to build minizip (changing this may break the build)
-export MINIZIP_VERSION="11"
+#export MINIZIP_VERSION="11"
+export MINIZIP_VERSION="101e"
 
 # Project version to use to build icu (changing this may break the build)
 #export ICU_VERSION="4.8.1.1"
@@ -91,7 +92,7 @@ mkdir -p $TMPDIR
 
 pushd $TMPDIR
 
-export ANDROID_API_LEVEL="14"
+export ANDROID_API_LEVEL="9"
 export ARM_TARGET="armv5"
 
 if [ -z $TOOLCHAIN_VERSION ]

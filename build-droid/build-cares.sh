@@ -29,7 +29,7 @@ set -e
 # Download source
 if [ ! -e "c-ares-${CARES_VERSION}.tar.gz" ]
 then
-  curl $PROXY -O "http://c-ares.haxx.se/download/c-ares-${CARES_VERSION}.tar.gz"
+  curl $PROXY -O "https://c-ares.haxx.se/download/c-ares-${CARES_VERSION}.tar.gz"
 fi
 
 # Extract source

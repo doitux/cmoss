@@ -29,7 +29,7 @@ set -e
 # Download source
 if [ ! -e "curl-${CURL_VERSION}.tar.gz" ]
 then
-  curl $PROXY -O "http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz"
+  curl $PROXY -O "https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz"
 fi
 
 # Extract source
