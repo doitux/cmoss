@@ -92,7 +92,7 @@ mkdir -p $TMPDIR
 pushd $TMPDIR
 
 export ANDROID_API_LEVEL="14"
-export ARM_TARGET="armv7"
+export ARM_TARGET="armv5"
 
 if [ -z $TOOLCHAIN_VERSION ]
 then
@@ -181,21 +181,6 @@ do
 
 	# Build protobuf
 	${TOPDIR}/build-droid/build-protobuf.sh > "${LOGPATH}-protobuf.log"
-
-	# Build expat
-	${TOPDIR}/build-droid/build-expat.sh > "${LOGPATH}-expat.log"
-
-	# Build yajl
-	${TOPDIR}/build-droid/build-yajl.sh > "${LOGPATH}-yajl.log"
-
-	# Build SQLCipher
-	${TOPDIR}/build-droid/build-sqlcipher.sh > "${LOGPATH}-sqlcipher.log"
-
-	# Build SOCI
-	${TOPDIR}/build-droid/build-soci.sh > "${LOGPATH}-soci.log"
-
-	# Build PION
-	${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
 
 	# Remove junk
 	rm -rf "${ROOTDIR}/bin"
