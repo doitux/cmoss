@@ -96,7 +96,7 @@ export ARM_TARGET="armv5"
 
 if [ -z $TOOLCHAIN_VERSION ]
 then
-	export TOOLCHAIN_VERSION="4.7"
+	export TOOLCHAIN_VERSION="4.9"
 fi
 
 # Platforms to build for (changing this may break the build)
