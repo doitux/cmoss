@@ -216,4 +216,9 @@ cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.la ${BINDIR}/lib/${ARM_TARG
 
 echo "**** Android c/c++ open source build completed ****"
 
+cd ${BINDIR}/lib/${ARM_TARGET}
+
+rm -f *.so
+rm -f *.la
+
 popd
