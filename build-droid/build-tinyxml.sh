@@ -53,7 +53,7 @@ export CXXCPP=${DROIDTOOLS}-cpp
 export RANLIB=${DROIDTOOLS}-ranlib
 export LDFLAGS="-Os -fpic -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${ROOTDIR}/lib"
 export CFLAGS="-Os -D_FILE_OFFSET_BITS=64 -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include -g ${BIGFILES}"
-export CXXFLAGS="-Os -D_FILE_OFFSET_BITS=64 -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
+export CXXFLAGS="-Os -D_FILE_OFFSET_BITS=64 -pipe -DTIXML_USE_STL -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 
 make CC="${CC}" AR="${AR}" RANLIB="${RANLIB}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 cp libtinyxml.a ${ROOTDIR}/lib
